@@ -1,14 +1,25 @@
 import streamlit as st
 import pandas as pd
 import pickle
+import os
 
-# Load Pickle Files
+# ✅ Ensure correct file paths for Streamlit Cloud
 @st.cache_data
 def load_model():
-    with open("kmeans_model.pkl", "rb") as model_file:
+    model_path = os.path.join(os.path.dirname(__file__), "kmeans_model.pkl")
+    scaler_path = os.path.join(os.path.dirname(__file__), "scaler.pkl")
+
+    # Check if the files exist before loading
+    if not os.path.exists(model_path) or not os.path.exists(scaler_path):
+        st.error("🚨 Model files not found! Please check if `kmeans_model.pkl` and `scaler.pkl` are in the repository.")
+        return None, None  # Return None to prevent further errors
+
+    with open(model_path, "rb") as model_file:
         kmeans = pickle.load(model_file)
-    with open("scaler.pkl", "rb") as scaler_file:
+
+    with open(scaler_path, "rb") as scaler_file:
         scaler = pickle.load(scaler_file)
+
     return kmeans, scaler
 
 # Load Processed Dataset
